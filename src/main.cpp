@@ -26,17 +26,29 @@ using namespace geode::prelude;
  */
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/EditorUI.hpp>
+#include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
 
 class $modify(TheEditorPauseLayer, EditorPauseLayer) {
+
+	struct Fields {
+		EditorUI* editorUi = nullptr;
+		std::ostringstream objDesc;
+		std::string objString;
+	};
 	
 	bool init(LevelEditorLayer * layer) {
+
 		if (!EditorPauseLayer::init(layer)) {
 			return false;
 		}
 
+		auto btnSprite = ButtonSprite::create(
+			"Interpolate", 30, 0, .4f, true, "bigFont.fnt", "GJ_button_04.png", 30.f
+		);
+
 		auto theButton = CCMenuItemSpriteExtra::create(
-			ButtonSprite::create("Test"),
+			btnSprite,
 			this,
 			menu_selector(TheEditorPauseLayer::onClicked)
 		);
@@ -47,11 +59,70 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		menu->updateLayout();
 
 		return true;
-	}
+	};
 
 	void onClicked(CCObject*) {
-		log::debug("test!");
+		log::debug("working..");
+		// FLAlertLayer::create("Interpolate", "nothing here yet", "bruh")->show(); 
+
+
+
+
+		auto editorLayer = this->m_editorLayer;
+		auto editorUi = editorLayer->m_editorUI;
+
+		
+		CCArray* objs = editorUi->getSelectedObjects();
+		if (objs->count() <= 0) {
+			FLAlertLayer::create("Interpolate", "BRUH SELECT AN OBJECT", "bruh")->show();
+			return;
+		}
+		auto obj = static_cast<GameObject*>(objs->objectAtIndex(0));
+
+
+		log::debug("hi: {}", obj->m_objectID);
+		m_fields->objDesc << "1," << obj->m_objectID << ",2," << obj->m_positionX << ",3," << obj->m_positionY << ";";
+
+		m_fields->objString = m_fields->objDesc.str();
+		m_fields->objString.pop_back();
+
+		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
+
+	};
+	
+};
+
+class $modify(TheEditorUI, EditorUI) {
+
+	/*
+	struct Fields {
+		EditorPauseLayer* epl;
+	};
+
+	bool init(LevelEditorLayer * editorLayer) {
+		if (!EditorUI::init(editorLayer)) {
+			return false;
+		}
+
+		auto caster = static_cast<TheEditorPauseLayer*>(m_fields->epl);
+		caster->initEditorUi();
+
 	}
+	*/
+
+};
+
+class $modify(TheLevelEditorLayer, LevelEditorLayer) {
+
+	/*
+	bool init(GJGameLevel* level, bool noUi) {
+		if (!LevelEditorLayer::init(level, noUi)) {
+			return false;
+		}
+
+		return true;
+	}
+	*/
 
 };
 
