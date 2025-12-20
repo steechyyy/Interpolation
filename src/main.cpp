@@ -25,7 +25,38 @@ using namespace geode::prelude;
  * struct MyMenuLayer : Modify<MyMenuLayer, MenuLayer> {};
  */
 #include <Geode/modify/MenuLayer.hpp>
+#include <Geode/modify/EditorUI.hpp>
+#include <Geode/modify/EditorPauseLayer.hpp>
+
+class $modify(TheEditorPauseLayer, EditorPauseLayer) {
+	
+	bool init(LevelEditorLayer * layer) {
+		if (!EditorPauseLayer::init(layer)) {
+			return false;
+		}
+
+		auto theButton = CCMenuItemSpriteExtra::create(
+			ButtonSprite::create("Test"),
+			this,
+			menu_selector(TheEditorPauseLayer::onClicked)
+		);
+
+		auto menu = this->getChildByID("top-menu");
+		menu->addChild(theButton);
+
+		menu->updateLayout();
+
+		return true;
+	}
+
+	void onClicked(CCObject*) {
+		log::debug("test!");
+	}
+
+};
+
 class $modify(MyMenuLayer, MenuLayer) {
+	
 	/**
 	 * Typically classes in GD are initialized using the `init` function, (though not always!),
 	 * so here we use it to add our own button to the bottom menu.
@@ -33,11 +64,14 @@ class $modify(MyMenuLayer, MenuLayer) {
 	 * Note that for all hooks, your signature has to *match exactly*,
 	 * `void init()` would not place a hook!
 	*/
+
 	bool init() {
+
 		/**
 		 * We call the original init function so that the
 		 * original class is properly initialized.
 		 */
+
 		if (!MenuLayer::init()) {
 			return false;
 		}
@@ -47,12 +81,14 @@ class $modify(MyMenuLayer, MenuLayer) {
 		 * being useful for debugging and such. See this page for more info about logging:
 		 * https://docs.geode-sdk.org/tutorials/logging
 		*/
+
 		log::debug("Hello from my MenuLayer::init hook! This layer has {} children.", this->getChildrenCount());
 
 		/**
 		 * See this page for more info about buttons
 		 * https://docs.geode-sdk.org/tutorials/buttons
 		*/
+
 		auto myButton = CCMenuItemSpriteExtra::create(
 			CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png"),
 			this,
@@ -67,6 +103,7 @@ class $modify(MyMenuLayer, MenuLayer) {
 		 * Node IDs are a Geode feature, see this page for more info about it:
 		 * https://docs.geode-sdk.org/tutorials/nodetree
 		*/
+
 		auto menu = this->getChildByID("bottom-menu");
 		menu->addChild(myButton);
 
@@ -74,6 +111,7 @@ class $modify(MyMenuLayer, MenuLayer) {
 		 * The `_spr` string literal operator just prefixes the string with
 		 * your mod id followed by a slash. This is good practice for setting your own node ids.
 		*/
+
 		myButton->setID("my-button"_spr);
 
 		/**
@@ -81,11 +119,13 @@ class $modify(MyMenuLayer, MenuLayer) {
 		 * This is yet another Geode feature, see this page for more info about it:
 		 * https://docs.geode-sdk.org/tutorials/layouts
 		*/
+
 		menu->updateLayout();
 
 		/**
 		 * We return `true` to indicate that the class was properly initialized.
 		 */
+
 		return true;
 	}
 
@@ -94,6 +134,7 @@ class $modify(MyMenuLayer, MenuLayer) {
 	 * The signature for button callbacks must always be the same,
 	 * return type `void` and taking a `CCObject*`.
 	*/
+
 	void onMyButton(CCObject*) {
 		FLAlertLayer::create("Geode", "Hello from my custom mod!", "OK")->show();
 	}
