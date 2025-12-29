@@ -9,9 +9,38 @@
 	"id": "steechy.interpolation",
 	"name": "Interpolation",
 	"version": "v1.0.0",
-	"developer": "steechy",
-	"description": "",
+	"developers": [
+		"steechy",
+		"slug9592"
+	],
+	"description": "does the interpolation",
 	"dependencies": {
 		"geode.node-ids": ">=v1.20.0"
+	},
+	"resources": {
+		"files": [
+			"resources/parameters.json"
+		]
+	},
+	"settings": {
+
+		"height-scale": {
+			"name": "height scale",
+			"description": "change the y distance of placed triggers! (in blocks)",
+			"type": "float",
+			"default": 3.0,
+			"requires-restart": false,
+			"min": 0,
+			"max": 10,
+			"controls": {
+				"arrows": true,
+				"arrow_step": 0.5,
+				"slider": true,
+				"slider_step": 0.1,
+				"input": true
+			}
+		}
+
 	}
+
 }

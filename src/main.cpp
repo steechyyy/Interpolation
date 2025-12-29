@@ -24,6 +24,10 @@ using namespace geode::prelude;
  *
  * struct MyMenuLayer : Modify<MyMenuLayer, MenuLayer> {};
  */
+
+#include <Geode/utils/file.hpp>
+#include <matjson.hpp>
+
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
@@ -35,6 +39,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		EditorUI* editorUi = nullptr;
 		std::ostringstream objDesc;
 		std::string objString;
+		matjson::Value parameters;
 	};
 	
 	bool init(LevelEditorLayer * layer) {
@@ -42,6 +47,17 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		if (!EditorPauseLayer::init(layer)) {
 			return false;
 		}
+
+		std::filesystem::path parametersJsonPath = Mod::get()->getResourcesDir() / "parameters.json";
+		std::ifstream file(parametersJsonPath);
+		if (!file.is_open()) {
+			log::error("failed to open json");
+		}
+		auto result = matjson::parse(file);
+		if (!result) {
+			log::error("failed to parse json, {}", result.unwrapErr());
+		}
+		m_fields->parameters = result.unwrap();
 
 		auto btnSprite = ButtonSprite::create(
 			"Interpolate", 30, 0, .4f, true, "bigFont.fnt", "GJ_button_04.png", 30.f
@@ -62,10 +78,9 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 	};
 
 	void onClicked(CCObject*) {
-		log::debug("working..");
-		// FLAlertLayer::create("Interpolate", "nothing here yet", "bruh")->show(); 
-
-
+		log::debug("mandatory string, {}", m_fields->parameters["901"]["name"].asString().unwrap());
+		// HELP I CANT BELIEVE I FIGURED OUT HOW TO LOAD FUCKASS JSONS IN ONE NIGHT OMG
+		// im so happy rn i could do da jordan [4:45AM 2025.12.29]
 
 
 		auto editorLayer = this->m_editorLayer;
@@ -84,7 +99,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		m_fields->objDesc << "1," << obj->m_objectID << ",2," << obj->m_positionX << ",3," << obj->m_positionY << ";";
 
 		m_fields->objString = m_fields->objDesc.str();
-		m_fields->objString.pop_back();
+		m_fields->objString.pop_back(); //pop back
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
 

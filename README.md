@@ -1,6 +1,8 @@
 # Interpolation
 This is where she makes a mod.
 
+for now, only linear interpolation. but splines would be cool as shit
+
 <img src="logo.png" width="150" alt="the mod's logo" />
 
 *Update logo.png to change your mod's icon (please)*
