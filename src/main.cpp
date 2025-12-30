@@ -52,10 +52,12 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		std::ifstream file(parametersJsonPath);
 		if (!file.is_open()) {
 			log::error("failed to open json");
+			return true;
 		}
 		auto result = matjson::parse(file);
 		if (!result) {
 			log::error("failed to parse json, {}", result.unwrapErr());
+			return true;
 		}
 		m_fields->parameters = result.unwrap();
 
@@ -78,25 +80,29 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 	};
 
 	void onClicked(CCObject*) {
-		log::debug("mandatory string, {}", m_fields->parameters["901"]["name"].asString().unwrap());
+		// log::debug("mandatory string, {}", m_fields->parameters["901"]["name"].asString().unwrap());
 		// HELP I CANT BELIEVE I FIGURED OUT HOW TO LOAD FUCKASS JSONS IN ONE NIGHT OMG
 		// im so happy rn i could do da jordan [4:45AM 2025.12.29]
 
-
 		auto editorLayer = this->m_editorLayer;
 		auto editorUi = editorLayer->m_editorUI;
-
-		
+	
 		CCArray* objs = editorUi->getSelectedObjects();
-		if (objs->count() <= 0) {
-			FLAlertLayer::create("Interpolate", "BRUH SELECT AN OBJECT", "bruh")->show();
+
+		if (objs->count() != 2) {
+			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTs", "bruh")->show();
 			return;
 		}
-		auto obj = static_cast<GameObject*>(objs->objectAtIndex(0));
+		auto obj01 = static_cast<GameObject*>(objs->objectAtIndex(0));
+		auto obj02 = static_cast<GameObject*>(objs->objectAtIndex(1));
 
+		if (obj01->m_objectID != obj02->m_objectID) {
+			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTS OF THE SAME KIND", "bruh")->show();
+			return;
+		};
 
-		log::debug("hi: {}", obj->m_objectID);
-		m_fields->objDesc << "1," << obj->m_objectID << ",2," << obj->m_positionX << ",3," << obj->m_positionY << ";";
+		log::debug("hi: {}", m_fields->parameters[std::to_string(obj01->m_objectID)]["name"].asString().unwrap());
+		m_fields->objDesc << "1," << obj01->m_objectID << ",2," << obj01->m_positionX << ",3," << obj01->m_positionY << ";";
 
 		m_fields->objString = m_fields->objDesc.str();
 		m_fields->objString.pop_back(); //pop back
