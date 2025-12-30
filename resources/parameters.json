@@ -26,6 +26,28 @@
         }
     },
 
+    "3006": {
+        "name": "area_move",
+        "parameters": {
+            "218": { "name": "move_dist", "type": "int"},
+            "219": { "name": "move_dist_+/-", "type": "int"},
+            "220": { "name": "offset_x", "type": "int" },
+            "221": { "name": "offset_x_+/-", "type": "int" },
+            "222": { "name": "length", "type": "int" },
+            "223": { "name": "length +/-", "type": "int" },
+            "231": { "name": "move_angle", "type": "int" },
+            "232": { "name": "move_angle_+/-", "type": "int"},
+            "237": { "name": "move_x", "type": "int" },
+            "238": { "name": "move_x_+/-", "type": "int" },
+            "239": { "name": "move_y", "type": "int" },
+            "240": { "name": "move_y_rot", "type": "int"},
+            "252": { "name": "offset_y", "type": "int" },
+            "253": { "name": "offset_y_+/-", "type": "int" },
+            "288": { "name": "relative_fade", "type": "float" }
+            
+        }
+    },
+
     "3008": {
         "name": "area_scale",
         "parameters": {
