@@ -3,7 +3,7 @@
 
     "901": {
         "name": "move",
-        "properties": {
+        "parameters": {
             "28": { "name": "move_x", "type": "int" },
             "29": { "name": "move_y", "type": "int" },
             "143": { "name": "mod_x", "type": "float" },
@@ -13,7 +13,7 @@
 
     "1520": {
         "name": "shake",
-        "properties": {
+        "parameters": {
             "75": { "name": "strength", "type": "float" },
             "84": { "name": "interval", "type": "float" }
         }
@@ -21,18 +21,54 @@
 
     "1935": {
         "name": "timewarp",
-        "properties": {
+        "parameters": {
             "120": { "name": "time_mod", "type": "float" }
         }
     },
 
-  "3010": {
-        "name": "area_tint",
-        "properties": {
-            "260": { "name": "fade_duration", "type": "float" },
-            "65": { "name": "fade_color", "type": "string" },
-            "66": { "name": "tint_strength", "type": "float" }
+    "3008": {
+        "name": "area_scale",
+        "parameters": {
+            "220": { "name": "offset_x", "type": "int" },
+            "221": { "name": "offset_x_+/-", "type": "int" },
+            "222": { "name": "length", "type": "int" },
+            "223": { "name": "length +/-", "type": "int" },
+            "233": { "name": "area_scale_x", "type": "float" },
+            "234": { "name": "area_scale_x_+/-", "type": "float" },
+            "235": { "name": "area_scale_y", "type": "float" },
+            "236": { "name": "area_scale_y_+/-", "type": "float" },
+            "252": { "name": "offset_y", "type": "int" },
+            "253": { "name": "offset_y_+/-", "type": "int" }
+        }
+    },
 
+    "3009": {
+        "name": "area_fade",
+        "parameters": {
+            "220": { "name": "offset_x", "type": "int" },
+            "221": { "name": "offset_x_+/-", "type": "int" },
+            "222": { "name": "length", "type": "int" },
+            "223": { "name": "length +/-", "type": "int" },
+            "252": { "name": "offset_y", "type": "int" },
+            "253": { "name": "offset_y_+/-", "type": "int" },
+            "275": { "name": "to_opacity", "type": "float" },
+            "286": { "name": "from_opacity", "type": "float" }
+        }
+    },
+
+    "3010": {
+        "name": "area_tint",
+        "parameters": {
+            "220": { "name": "offset_x", "type": "int" },
+            "221": { "name": "offset_x_+/-", "type": "int" },
+            "222": { "name": "length", "type": "int" },
+            "223": { "name": "length +/-", "type": "int" },
+            "252": { "name": "offset_y", "type": "int" },
+            "253": { "name": "offset_y_+/-", "type": "int" },
+            "265": { "name": "tint", "type": "float" }
         }
     }
+
+    
+
 }

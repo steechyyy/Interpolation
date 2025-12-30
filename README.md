@@ -1,5 +1,7 @@
 # Interpolation
 This is where she makes a mod.
+a niche mod for niche individuals
+
 
 for now, only linear interpolation. but splines would be cool as shit
 
