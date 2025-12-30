@@ -24,5 +24,15 @@
         "properties": {
             "120": { "name": "time_mod", "type": "float" }
         }
+    },
+
+  "3010": {
+        "name": "area_tint",
+        "properties": {
+            "260": { "name": "fade_duration", "type": "float" },
+            "65": { "name": "fade_color", "type": "string" },
+            "66": { "name": "tint_strength", "type": "float" }
+
+        }
     }
 }
