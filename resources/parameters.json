@@ -48,6 +48,14 @@
         }
     },
 
+   "3007": {
+        "name": "area_rotate",
+        "parameters": {
+            "270": { "name": "area_rotation,","type": "float" },
+            "271": { "name": "area_rotation_+/-","type": "float" }
+        }
+    },
+
     "3008": {
         "name": "area_scale",
         "parameters": {
@@ -89,14 +97,6 @@
             "253": { "name": "offset_y_+/-", "type": "int" },
             "265": { "name": "tint", "type": "float" }
         }
-    },
-
-  "3007": {
-    "name": "area_rotate",
-    "parameters": {
-      "270": {"name": "area_rotation,","type": "float"},
-      "271": {"name": "area_rotation_+/-","type": "float"}
     }
-  }
 
 }
