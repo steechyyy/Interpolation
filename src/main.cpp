@@ -108,7 +108,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		m_fields->objString.pop_back(); //pop back
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
-
+		FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
 	};
 	
 };
