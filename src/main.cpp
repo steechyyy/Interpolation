@@ -2,7 +2,7 @@
  * Include the Geode headers.
  */
 
- #include "../src/headers/common.hpp"
+	#include "../src/headers/common.hpp"
 /**
  * Brings cocos2d and all Geode namespaces to the current scope.
  */
@@ -115,6 +115,9 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 		Point newPoint(0.5f, 0.7f);
 		log::debug("{}", newPoint.getTime());
+
+		Spline newSpline("blud");
+		newSpline.addPoint(newPoint);
 
 		
 	};
