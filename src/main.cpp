@@ -1,7 +1,7 @@
 /**
  * Include the Geode headers.
  */
-#include <Geode/Geode.hpp>
+
 
 /**
  * Brings cocos2d and all Geode namespaces to the current scope.
@@ -25,13 +25,7 @@ using namespace geode::prelude;
  * struct MyMenuLayer : Modify<MyMenuLayer, MenuLayer> {};
  */
 
-#include <Geode/utils/file.hpp>
-#include <matjson.hpp>
 
-#include <Geode/modify/MenuLayer.hpp>
-#include <Geode/modify/EditorUI.hpp>
-#include <Geode/modify/LevelEditorLayer.hpp>
-#include <Geode/modify/EditorPauseLayer.hpp>
 
 
 class $modify(TheEditorPauseLayer, EditorPauseLayer) {
@@ -56,7 +50,6 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 				"go away"
 			)->show();
 		}
-
 
 		std::filesystem::path parametersJsonPath = Mod::get()->getResourcesDir() / "parameters.json";
 		std::ifstream file(parametersJsonPath);
