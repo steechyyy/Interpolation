@@ -17,6 +17,12 @@ public:
 	// construct new point
 	Point(float time, float value, Spline* spline);
 
+	// no
+	void setTime(float t);
+
+	//im lazuy
+	void setValue(float v);
+
 	// get time
 	float getTime();
 
