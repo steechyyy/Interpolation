@@ -2,17 +2,7 @@
  * Include the Geode headers.
  */
 
-// #include "../headers/common.hpp"
-
-#include <Geode/Geode.hpp>
-#include <Geode/utils/file.hpp>
-#include <matjson.hpp>
-
-#include <Geode/modify/MenuLayer.hpp>
-#include <Geode/modify/EditorUI.hpp>
-#include <Geode/modify/LevelEditorLayer.hpp>
-#include <Geode/modify/EditorPauseLayer.hpp>
-
+ #include "../src/headers/common.hpp"
 /**
  * Brings cocos2d and all Geode namespaces to the current scope.
  */
@@ -122,6 +112,10 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
 		FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
+
+		Point newPoint(0.5f, 0.7f);
+		log::debug("{}", newPoint.getTime());
+
 		
 	};
 	
