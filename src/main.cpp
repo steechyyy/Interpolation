@@ -33,6 +33,7 @@ using namespace geode::prelude;
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
 
+
 class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 	struct Fields {
@@ -47,6 +48,15 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		if (!EditorPauseLayer::init(layer)) {
 			return false;
 		}
+
+		if (!Mod::get()->setSavedValue<bool>("shown-tut-notice", true)) {
+			FLAlertLayer::create(
+				"interpolation mod tutorial",
+				"if you're unsure on how to utilize this mod, don't hesitate to look for a tutorial",
+				"go away"
+			)->show();
+		}
+
 
 		std::filesystem::path parametersJsonPath = Mod::get()->getResourcesDir() / "parameters.json";
 		std::ifstream file(parametersJsonPath);
@@ -109,7 +119,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
 		FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
-		//test because github pmo rn
+		
 	};
 	
 };
