@@ -99,12 +99,13 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		auto obj01 = static_cast<GameObject*>(objs->objectAtIndex(0));
 		auto obj02 = static_cast<GameObject*>(objs->objectAtIndex(1));
 
+		log::debug("{}", obj01->m_objectID);
 		if (obj01->m_objectID != obj02->m_objectID) {
 			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTS OF THE SAME KIND", "bruh")->show();
 			return;
 		};
 
-		log::debug("hi: {}", m_fields->parameters[std::to_string(obj01->m_objectID)]["name"].asString().unwrap());
+		// log::debug("hi: {}", m_fields->parameters[std::to_string(obj01->m_objectID)]["name"].asString().unwrap());
 		m_fields->objDesc << "1," << obj01->m_objectID << ",2," << obj01->m_positionX << ",3," << obj01->m_positionY << ";";
 
 		m_fields->objString = m_fields->objDesc.str();

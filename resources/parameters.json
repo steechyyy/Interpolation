@@ -11,6 +11,51 @@
         }
     },
 
+    "1006": {
+        "name": "pulse",
+        "parameters": {
+            "7": { "name": "red", "type": "int" },
+            "8": { "name": "green", "type": "int" },
+            "9": { "name": "blue", "type": "int" },
+            "45": { "name": "fade_in", "type": "float" },
+            "46": { "name": "hold", "type": "float" },
+            "47": { "name": "fade_out", "type": "float" }
+        }
+    },
+
+    "1007": {
+        "name": "alpha",
+        "parameters": {
+            "35": { "name": "opacity", "type": "float" }
+        }
+    },
+
+    "1268": {
+        "name": "spawn",
+        "parameters": {
+            "63": { "name": "delay", "type": "float" },
+            "556": { "name": "delay_+/-", "type": "float" }
+        }
+    },
+
+    "1346": {
+        "name": "rotate",
+        "parameters": {
+            "68": { "name": "degrees", "type": "float" },
+            "69": { "name": "x360", "type": "int" },
+            "402": { "name": "rot_offset", "type": "float" },
+            "403": { "name": "dynamic_mode_easing", "type": "int" }
+        }
+    },
+
+    "1347": {
+        "name": "follow",
+        "parameters": {
+            "72": { "name": "x_mod", "type": "float" },
+            "73": { "name": "y_mod", "type": "float" }
+        }
+    },
+
     "1520": {
         "name": "shake",
         "parameters": {
@@ -19,10 +64,37 @@
         }
     },
 
+    "1814": {
+        "name": "follow_plr_y",
+        "parameters": {
+            "90": { "name": "speed", "type": "float" },
+            "91": { "name": "delay", "type": "float" },
+            "92": { "name": "offset", "type": "int" },
+            "105": { "name": "max_speed", "type": "float"}
+        }
+    },
+
+    "1817": {
+        "name": "pickup",
+        "parameters": {
+            "80": { "name": "item_id", "type": "int" },
+            "77": { "name": "count", "type": "int" },
+            "449": { "name": "multiplier", "type": "float" }
+        }
+    },
+
     "1935": {
         "name": "timewarp",
         "parameters": {
             "120": { "name": "time_mod", "type": "float" }
+        }
+    },
+
+    "2067": {
+        "name": "scale",
+        "parameters": {
+            "150": { "name": "scale_trigger_scale_x", "type": "float" },
+            "151": { "name": "scale_trigger_scale_y", "type": "float" }
         }
     },
 
