@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SPLINE_H
+#define SPLINE_H
 
 class Point;
 
@@ -29,3 +30,5 @@ public:
 	const std::vector<Point*>& getPoints() const;
 
 };
+
+#endif 

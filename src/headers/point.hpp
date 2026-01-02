@@ -1,4 +1,5 @@
-#pragma once
+#ifndef POINT_H
+#define POINT_H
 
 class Spline;
 
@@ -32,3 +33,5 @@ public:
 	// get spline owner
 	Spline* getSpline();
 };
+
+#endif

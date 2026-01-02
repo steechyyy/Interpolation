@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COMMON_H
+#define COMMON_H
+
 #include <Geode/Geode.hpp>
 #include <Geode/utils/file.hpp>
 #include <matjson.hpp>
@@ -11,3 +13,5 @@
 #include "../src/headers/point.hpp"
 #include "../src/headers/spline.hpp"
 #include "../src/headers/interpolation-menu.hpp"
+
+#endif
