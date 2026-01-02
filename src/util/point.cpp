@@ -1,4 +1,4 @@
-#include "../headers/point.hpp"
+#include <point.hpp>
 
 
 Point::Point() : time(0.0f), value(0.0f), spline(nullptr) {}

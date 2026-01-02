@@ -1,5 +1,5 @@
 #include <Geode/Geode.hpp>
-#include "../headers/spline.hpp"
+#include <spline.hpp>
 
 using namespace geode::prelude;
 
