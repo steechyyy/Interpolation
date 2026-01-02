@@ -98,6 +98,13 @@
         }
     },
 
+    "2999": {
+        "name": "edit_mg",
+        "parameters": {
+            "29": { "name": "offset", "type": "int" }
+        }
+    },
+
     "3006": {
         "name": "area_move",
         "parameters": {
@@ -168,6 +175,22 @@
             "252": { "name": "offset_y", "type": "int" },
             "253": { "name": "offset_y_+/-", "type": "int" },
             "265": { "name": "tint", "type": "float" }
+        }
+    },
+
+    "3606": {
+        "name": "bg_speed",
+        "parameters": {
+            "143": { "name": "mod_x", "type": "float" },
+            "144": { "name": "mod_y", "type": "float" }
+        }
+    },
+
+    "3612": {
+        "name": "mg_speed",
+        "parameters": {
+            "143": { "name": "mod_x", "type": "float" },
+            "144": { "name": "mod_y", "type": "float" }
         }
     }
 
