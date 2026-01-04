@@ -20,30 +20,18 @@ public:
 
 	// constructor2
 	Spline(const std::string& idNew); // & = nix wird veraendert am eingabewert
+	Spline(const std::string& idNew, const std::vector<Point>& newPoints); // costructor
+	Spline(const std::string& idNew, const CCArray* objs); // the best constructor
 
-	// costructor
-	Spline(const std::string& idNew, const std::vector<Point>& newPoints);
+	//geters
+	const std::vector<Point>& getPoints() const; // bruh
+	const std::string& getId() const; // gets iD
+	Point* getPointAtIndex(size_t index); 	// hacks the us navy
 
-	// the best constructor
-	Spline(const std::string& idNew, const CCArray* objs);
-
-	// bruh 2
-	Point& addPoint(Point p);
-
-	// construct points from.. uh.. not a point
-	Point& addPoint(float t, float v);
-
-	// clear the thing
-	void clear();
-
-	// gets iD
-	const std::string& getId() const;
-
-	// hacks the us navy
-	Point* getPointAtIndex(size_t index);
-
-	// bruh
-	const std::vector<Point>& getPoints() const;
+	//seters
+	Point& addPoint(Point p); // bruh 2
+	Point& addPoint(float t, float v); // construct points from.. uh.. not a point
+	void clear(); 	// clear the thing
 
 };
 
