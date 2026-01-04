@@ -90,6 +90,13 @@
         }
     },
 
+    "2066": {
+        "name": "gravity",
+        "parameters": {
+            "148": { "name": "gravity", "type": "float" }
+        }
+    },
+
     "2067": {
         "name": "scale",
         "parameters": {

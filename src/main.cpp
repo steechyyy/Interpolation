@@ -29,7 +29,7 @@ using namespace geode::prelude;
 
 
 class $modify(TheEditorPauseLayer, EditorPauseLayer) {
-
+	
 	struct Fields {
 		EditorUI* editorUi = nullptr;
 		std::ostringstream objDesc;
@@ -112,14 +112,16 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		m_fields->objString.pop_back(); //pop back
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
-		FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
+		//FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
+
 
 		Point newPoint(0.5f, 0.7f);
-		log::debug("{}", newPoint.getTime());
+		
 
 		Spline newSpline("blud");
-		newSpline.addPoint(&newPoint);
-
+		newSpline.addPoint(newPoint);
+		//log::debug("{}", newSpline.getId());
+		InterpolationMenu::create(newSpline.getId())->show();
 		
 	};
 	
