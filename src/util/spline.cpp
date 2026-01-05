@@ -55,6 +55,8 @@ Point* Spline::addPoint(float t, float v) {
 bool Spline::removePointAtIndex(size_t index) {
 	if (index >= points.size()) return false;
 	points.erase(points.begin() + index);
+
+	return true;
 }
 
 bool Spline::removePoint(Point* p) {
