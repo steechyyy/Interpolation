@@ -25,13 +25,13 @@ public:
 	void setValue(float v);
 
 	// get time
-	float getTime();
+	float getTime() const;
 
 	// get value
-	float getValue();
+	float getValue() const;
 
 	// get spline owner
-	Spline* getSpline();
+	Spline* getSpline() const;
 };
 
 #endif

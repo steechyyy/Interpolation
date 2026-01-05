@@ -113,15 +113,15 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
 		//FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
-
+		SplineManager mgr;
 
 		Point newPoint(0.5f, 0.7f);
-		
 
-		Spline newSpline("blud");
-		newSpline.addPoint(newPoint);
+		Spline* wow = mgr.newSpline("name");
+
+		wow->addPoint(std::move(newPoint));
 		//log::debug("{}", newSpline.getId());
-		InterpolationMenu::create(newSpline.getId())->show();
+		InterpolationMenu::create(wow->getId())->show();
 		
 	};
 	

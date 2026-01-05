@@ -4,72 +4,85 @@
 using namespace geode::prelude;
 
 Spline* SplineManager::newSpline(const std::string& id) {
-	Spline s(id);
-	splines.push_back(s);
-	return &splines.back();
+	auto s = std::make_unique<Spline>(id);
+	splines.push_back(std::move(s));
+	return splines.back().get();
 };
 
+/*
 Spline* SplineManager::newSpline(const std::string& id, const std::vector<Point>& points) {
-	Spline s(id, points);
-	splines.push_back(s);
-	return &splines.back();
+	auto s = std::make_unique<Spline>(id, points);
+	splines.push_back(std::move(s));
+	return splines.back().get();
 };
+*/
 
 Spline* SplineManager::newSpline(const std::string& id, const CCArray* objs) {
-	Spline s(id, objs);
-	splines.push_back(s);
-	return &splines.back();
+	auto s = std::make_unique<Spline>(id, objs);
+	splines.push_back(std::move(s));
+	return splines.back().get();
 };
 
-Spline& SplineManager::addSpline(Spline spline) {
-	splines.push_back(spline);
-	return splines.back();
+Spline* SplineManager::addSpline(Spline&& s) {
+	auto ptr = std::make_unique<Spline>(std::move(s));
+	splines.push_back(std::move(ptr));
+	return splines.back().get();
 };
 
-Point* SplineManager::addPointToSpline(const std::string& idSpline, Point p) {
-	if (auto* s = SplineManager::getSplineFromId(idSpline)) {
-		return &s->addPoint(p);
-	};
+Spline* SplineManager::getSplineById(const std::string& id) {
+	for (const auto& ptr : splines) {
+		if (ptr->getId() == id) {
+			return ptr.get();
+		}
+	}
 
 	return nullptr;
 };
 
+Point* SplineManager::addPointToSpline(const std::string& id, Point p) {
+	Spline* s = getSplineById(id);
+	if (s == nullptr) return nullptr;
+
+	return s->addPoint(std::move(p));
+};
+
 Point* SplineManager::addPointToSpline(Spline& s, Point p) {
-	s.addPoint(p);
-	return &s.getPoints().back();
+	return s.addPoint(std::move(p));
 };
 
 Point* SplineManager::addPointToSpline(const std::string& idSpline, float t, float v) {
-	Spline* s = SplineManager::getSplineFromId(idSpline);
-	if (s == nullptr) { return nullptr; };
+	Spline* s = getSplineById(idSpline);
+	if (s == nullptr) return nullptr;
 
-	s->addPoint(t, v);
-	return &s->getPoints().back();
+	return s->addPoint(t, v);
 };
 
 Point* SplineManager::addPointToSpline(Spline& s, float t, float v) {
-	s.addPoint(t, v);
-	return &s.getPoints().back();
+	return s.addPoint(t, v);
+};
+
+bool SplineManager::removePointFromSpline(const std::string& id, size_t index) {
+	Spline* s = getSplineById(id);
+	if (s == nullptr) return false;
+
+	return s->removePointAtIndex(index);
+};
+
+bool SplineManager::removePointFromSpline(const std::string& id, Point* p) {
+	Spline* s = getSplineById(id);
+	if (s == nullptr) return false;
+
+	return s->removePoint(p);
 };
 
 Spline* SplineManager::getSplineAtIndex(size_t index) {
 	if (index < splines.size()) {
-		return &splines[index];
+		return splines[index].get();
 	};
 
 	return nullptr;
 };
 
-Spline* SplineManager::getSplineFromId(const std::string& id) {
-	auto it = std::find_if(
-		splines.begin(),
-		splines.end(),
-		[&](Spline& s) { return s.getId() == id; }
-	);
-
-	return it != splines.end() ? &(*it) : nullptr;
-}
-
-const std::vector<Spline>& SplineManager::getSplines() const {
+const std::vector<std::unique_ptr<Spline>>& SplineManager::getSplines() const {
 	return splines;
 };

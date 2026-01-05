@@ -10,7 +10,7 @@ class Spline;
 
 class SplineManager {
 private:
-	std::vector<Spline>& splines;
+	std::vector<std::unique_ptr<Spline>> splines;
 
 public:
 
@@ -18,17 +18,21 @@ public:
 	Spline* newSpline(const std::string& id, const std::vector<Point>& newPoints);
 	Spline* newSpline(const std::string& id, const CCArray* objs);
 
-	Spline& addSpline(Spline spline);
+	Spline* addSpline(Spline&& s);
 
-	Point* addPointToSpline(const std::string& idSpline, Point p);
+	Spline* getSplineById(const std::string& id);
+
+	Point* addPointToSpline(const std::string& id, Point p);
 	Point* addPointToSpline(Spline& s, Point p);
-	Point* addPointToSpline(const std::string& idSpline, float t, float v);
+	Point* addPointToSpline(const std::string& id, float t, float v);
 	Point* addPointToSpline(Spline& s, float t, float v);
 
-	Spline* getSplineAtIndex(size_t index);
-	Spline* getSplineFromId(std::string& id);
+	bool removePointFromSpline(const std::string& id, size_t index);
+	bool removePointFromSpline(const std::string& id, Point* p);
 
-	const std::vector<Spline>& getSplines() const;
+	Spline* getSplineAtIndex(size_t index);
+
+	const std::vector<std::unique_ptr<Spline>>& getSplines() const;
 	
 };
 

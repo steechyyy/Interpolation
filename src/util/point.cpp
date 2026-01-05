@@ -14,14 +14,14 @@ void Point::setTime(float t) {
 	time = t;
 };
 
-float Point::getTime() {
+float Point::getTime() const {
 	return time;
 };
 
-float Point::getValue() {
+float Point::getValue() const {
 	return value;
 };
 
-Spline* Point::getSpline() {
+Spline* Point::getSpline() const {
 	return spline;
 };

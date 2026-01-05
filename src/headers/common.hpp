@@ -12,6 +12,7 @@
 
 #include <point.hpp>
 #include <spline.hpp>
+#include <SplineManager.hpp>
 #include <interpolation-menu.hpp>
 
 
