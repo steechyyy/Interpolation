@@ -1,6 +1,8 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include <common.hpp>
+
 class Spline;
 
 class Point {

@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
-#include "../headers/spline.hpp"
-#include "../headers/point.hpp"
+#include <common.hpp>
 
 using namespace geode::prelude;
 
