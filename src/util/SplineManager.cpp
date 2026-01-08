@@ -4,6 +4,8 @@
 using namespace geode::prelude;
 
 Spline* SplineManager::newSpline(const std::string& id) {
+	if (getSplineById(id) != nullptr) return nullptr;
+
 	auto s = std::make_unique<Spline>(id);
 	splines.push_back(std::move(s));
 	return splines.back().get();
@@ -18,12 +20,16 @@ Spline* SplineManager::newSpline(const std::string& id, const std::vector<Point>
 */
 
 Spline* SplineManager::newSpline(const std::string& id, const CCArray* objs) {
+	if (getSplineById(id) != nullptr) return nullptr;
+
 	auto s = std::make_unique<Spline>(id, objs);
 	splines.push_back(std::move(s));
 	return splines.back().get();
 };
 
 Spline* SplineManager::addSpline(Spline&& s) {
+	if (getSplineById(s.getId()) != nullptr) return nullptr;
+
 	auto ptr = std::make_unique<Spline>(std::move(s));
 	splines.push_back(std::move(ptr));
 	return splines.back().get();
@@ -86,3 +92,7 @@ Spline* SplineManager::getSplineAtIndex(size_t index) {
 const std::vector<std::unique_ptr<Spline>>& SplineManager::getSplines() const {
 	return splines;
 };
+
+void SplineManager::clear() {
+	splines.clear();
+}

@@ -11,11 +11,12 @@ class Spline;
 class SplineManager {
 private:
 	std::vector<std::unique_ptr<Spline>> splines;
+	SplineManager() {};
 
 public:
 
 	Spline* newSpline(const std::string& id);
-	Spline* newSpline(const std::string& id, const std::vector<Point>& newPoints);
+	//Spline* newSpline(const std::string& id, const std::vector<Point>& newPoints);
 	Spline* newSpline(const std::string& id, const CCArray* objs);
 
 	Spline* addSpline(Spline&& s);
@@ -33,7 +34,14 @@ public:
 	Spline* getSplineAtIndex(size_t index);
 
 	const std::vector<std::unique_ptr<Spline>>& getSplines() const;
-	
+
+	static SplineManager& get() {
+		static SplineManager instance;
+		return instance;
+	};
+
+	// get rid of everything spline
+	void clear();
 };
 
 #endif

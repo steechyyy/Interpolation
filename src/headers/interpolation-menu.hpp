@@ -4,14 +4,14 @@
 #include <common.hpp>
 using namespace geode::prelude;
 
-class InterpolationMenu : public geode::Popup<std::string const&> {
+class InterpolationMenu : public geode::Popup<Spline*> {
 protected:
 
-	bool setup(std::string const& value) override;
+	bool setup(Spline* s) override;
 
 public:
 
-	static InterpolationMenu* create(std::string const& text);
+	static InterpolationMenu* create(Spline* s);
 };
 
 

@@ -99,7 +99,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		auto obj01 = static_cast<GameObject*>(objs->objectAtIndex(0));
 		auto obj02 = static_cast<GameObject*>(objs->objectAtIndex(1));
 
-		log::debug("{}", obj01->m_objectID);
+		//log::debug("{}", obj01->m_objectID);
 		if (obj01->m_objectID != obj02->m_objectID) {
 			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTS OF THE SAME KIND", "bruh")->show();
 			return;
@@ -113,16 +113,28 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
 		//FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
-		SplineManager mgr;
+		
 
 		Point newPoint(0.5f, 0.7f);
+		if (Spline* wow = SplineManager::get().newSpline("ultimate spline")) {
+			wow->addPoint(std::move(newPoint));
+			InterpolationMenu::create(wow)->show();
 
-		Spline* wow = mgr.newSpline("name");
+		}
+		else {
+			FLAlertLayer::create(
+				"oh no!",
+				"something went wrong..",
+				"ok sorry.."
+			)->show();
+		};
 
-		wow->addPoint(std::move(newPoint));
-		//log::debug("{}", newSpline.getId());
-		InterpolationMenu::create(wow->getId())->show();
-		
+		std::vector<std::string> res;
+		for (const auto& ptr : SplineManager::get().getSplines()) {
+			res.push_back(ptr->getId());
+
+			log::debug("{}", res);
+		};
 	};
 	
 };
