@@ -2,6 +2,7 @@
 #define SPLINEMANAGER_H
 
 #include <common.hpp>
+#include "spline.hpp"
 
 using namespace geode::prelude;
 
