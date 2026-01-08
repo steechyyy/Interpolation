@@ -3,11 +3,10 @@
 
 #include <common.hpp>
 #include "spline.hpp"
+#include "point.hpp"
 
 using namespace geode::prelude;
 
-class Point;
-class Spline;
 
 class SplineManager {
 private:
