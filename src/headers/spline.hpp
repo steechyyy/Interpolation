@@ -1,15 +1,15 @@
+#pragma once
+
 #ifndef SPLINE_H
 #define SPLINE_H
 
 #include <string>
 #include <vector>
 #include <cstddef>
-#include <common.hpp>
+
+#include "point.hpp"
 
 using namespace geode::prelude;
-
-
-class Point;
 
 class Spline {
 private:

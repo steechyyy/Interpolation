@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
-#include <common.hpp>
-
+#include "point.hpp"
+#include "spline.hpp"
 using namespace geode::prelude;
 
 // costructor 2
