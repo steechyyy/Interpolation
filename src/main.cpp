@@ -95,15 +95,35 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		if (objs->count() != 2) {
 			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTs", "bruh")->show();
 			return;
-		}
+		};
+
 		auto obj01 = static_cast<GameObject*>(objs->objectAtIndex(0));
 		auto obj02 = static_cast<GameObject*>(objs->objectAtIndex(1));
+		bool o1left = obj01->getPositionX() < obj02->getPositionX();
 
-		//log::debug("{}", obj01->m_objectID);
+
 		if (obj01->m_objectID != obj02->m_objectID) {
 			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTS OF THE SAME KIND", "bruh")->show();
 			return;
 		};
+
+		GameObject* left = o1left ? obj01 : obj02;
+		GameObject* right = o1left ? obj02 : obj01;
+
+		Point newPoint(0.5f, 0.7f);
+		if (Spline* wow = SplineManager::get().newSpline("sigma")) {
+			wow->addPoint(std::move(newPoint));
+			InterpolationMenu::create(wow, left, right)->show();
+		};
+
+		std::vector<std::string> res;
+		for (const auto& ptr : SplineManager::get().getSplines()) {
+			res.push_back(ptr->getId());
+
+			log::debug("{}", res);
+		};
+
+
 
 		// log::debug("hi: {}", m_fields->parameters[std::to_string(obj01->m_objectID)]["name"].asString().unwrap());
 		m_fields->objDesc << "1," << obj01->m_objectID << ",2," << obj01->m_positionX << ",3," << obj01->m_positionY << ";";
@@ -113,28 +133,6 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
 		//FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
-		
-
-		Point newPoint(0.5f, 0.7f);
-		if (Spline* wow = SplineManager::get().newSpline("ultimate spline")) {
-			wow->addPoint(std::move(newPoint));
-			InterpolationMenu::create(wow)->show();
-
-		}
-		else {
-			FLAlertLayer::create(
-				"oh no!",
-				"something went wrong..",
-				"ok sorry.."
-			)->show();
-		};
-
-		std::vector<std::string> res;
-		for (const auto& ptr : SplineManager::get().getSplines()) {
-			res.push_back(ptr->getId());
-
-			log::debug("{}", res);
-		};
 	};
 	
 };
