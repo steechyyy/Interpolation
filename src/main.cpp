@@ -139,7 +139,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 class $modify(TheEditorUI, EditorUI) {
 
-	/*
+	
 	struct Fields {
 		EditorPauseLayer* epl;
 	};
@@ -149,11 +149,11 @@ class $modify(TheEditorUI, EditorUI) {
 			return false;
 		}
 
-		auto caster = static_cast<TheEditorPauseLayer*>(m_fields->epl);
-		caster->initEditorUi();
+		auto& mgr = SplineManager::get();
+		mgr.newSpline("hi twin");
 
 	}
-	*/
+	
 
 };
 

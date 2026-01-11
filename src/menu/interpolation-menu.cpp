@@ -18,7 +18,7 @@ constexpr ccColor3B clrs[]{
 
 bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     
-    auto mgr = SplineManager::get();
+    auto& mgr = SplineManager::get();
     m_noElasticity = false;
     
     float diff = right->getPositionX() - left->getPositionX();
