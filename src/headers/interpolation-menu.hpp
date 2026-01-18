@@ -6,6 +6,7 @@ using namespace geode::prelude;
 
 class InterpolationMenu : public geode::Popup<Spline*, GameObject*, GameObject*> {
 protected:
+	CCMenu* m_btnMenu = nullptr;
 
 	bool setup(Spline*, GameObject* left, GameObject* right) override;
 

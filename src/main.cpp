@@ -111,7 +111,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		GameObject* right = o1left ? obj02 : obj01;
 
 		Point newPoint(0.5f, 0.7f);
-		if (Spline* wow = SplineManager::get().newSpline("sigma")) {
+		if (Spline* wow = SplineManager::get().newSpline("wfwfwfwfwae")) {
 			wow->addPoint(std::move(newPoint));
 			InterpolationMenu::create(wow, left, right)->show();
 		};
@@ -144,7 +144,7 @@ class $modify(TheEditorUI, EditorUI) {
 		EditorPauseLayer* epl;
 	};
 
-	bool init(LevelEditorLayer * editorLayer) {
+	bool init(LevelEditorLayer* editorLayer) {
 		if (!EditorUI::init(editorLayer)) {
 			return false;
 		}
@@ -152,7 +152,8 @@ class $modify(TheEditorUI, EditorUI) {
 		auto& mgr = SplineManager::get();
 		mgr.newSpline("hi twin");
 
-	}
+		return true;
+	};
 	
 
 };

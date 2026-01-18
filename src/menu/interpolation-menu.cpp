@@ -26,14 +26,12 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     mgr.addPointToSpline(s->getId(), Point(1, .5));
 
     /* todo:
-        -   create color table for multiple spline lines
         -   design the system in such a way multiple splines can be shown ontop of eachother
         -   read the object id, and for every parameter entry in the json create a new spline
         -   set up each spline with its default settings (do this in the constructor)
         -   Create a button for every editable parameter, these can either be selected or deselected
         -   If button for parameter is selected, user can edit selected parameters
         -   die or something i dont know
-    
     */
     
     log::debug("{}", diff);
@@ -58,8 +56,30 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     draw->setContentSize(ccp(50.f, 50.f));
 
     draw->drawDot(ccp(2.f, 2.f), 1, ccc4f(0.f, 1.f, 1.f, .5f));
+
+
+    // buton.......omgg......
+    m_btnMenu = CCMenu::create();
+    m_btnMenu->setContentWidth(120.f);
+    m_btnMenu->setLayout(
+        RowLayout::create()
+        ->setAxisAlignment(AxisAlignment::End)
+        ->setAxisReverse(true)
+        ->setGap(15)
+    );
+    m_btnMenu->setAnchorPoint(ccp(1, 0));
+    m_btnMenu->setID("btns_bottom"_spr);
+
+    auto okBtn = ButtonSprite::create("go!", "bigFont.fnt", "GJ_Button_01.png");
+    m_btnMenu->addChildAtPosition(okBtn, Anchor::BottomRight);
+
+    auto nvmBtn = ButtonSprite::create("nvm..", "bigFont.fnt", "GJ_Button_06.png");
+    m_btnMenu->addChildAtPosition(nvmBtn, Anchor::BottomRight);
     
 
+
+    m_mainLayer->addChildAtPosition(m_btnMenu, Anchor::BottomRight, ccp(-10, 10));
+    m_btnMenu->updateLayout();
     return true;
 };
 
