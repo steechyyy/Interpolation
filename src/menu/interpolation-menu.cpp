@@ -70,13 +70,20 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     m_btnMenu->setAnchorPoint(ccp(1, 0));
     m_btnMenu->setID("btns_bottom"_spr);
 
-    auto okBtn = ButtonSprite::create("go!", "bigFont.fnt", "GJ_Button_01.png");
-    m_btnMenu->addChildAtPosition(okBtn, Anchor::BottomRight);
 
-    auto nvmBtn = ButtonSprite::create("nvm..", "bigFont.fnt", "GJ_Button_06.png");
-    m_btnMenu->addChildAtPosition(nvmBtn, Anchor::BottomRight);
+
+    auto okSprite = ButtonSprite::create("go!", "bigFont.fnt", "GJ_Button_01.png");
+    // m_btnMenu->addChildAtPosition(okBtn, Anchor::BottomRight);
+
+    // auto nvmSprite = ButtonSprite::create("nvm..", "bigFont.fnt", "GJ_Button_06.png");
     
-
+    
+    auto okbtn = CCMenuItemSpriteExtra::create(
+        okSprite,
+        this,
+        menu_selector(InterpolationMenu::on_button)
+    );
+    m_btnMenu->addChildAtPosition(okbtn, Anchor::BottomRight);
 
     m_mainLayer->addChildAtPosition(m_btnMenu, Anchor::BottomRight, ccp(-10, 10));
     m_btnMenu->updateLayout();
@@ -88,12 +95,15 @@ InterpolationMenu* InterpolationMenu::create(Spline* s, GameObject* left, GameOb
     if (ret->initAnchored(400.f, 270.f, s, left, right)) {
         ret->autorelease();
         return ret;
-    }   
+    }
 
     delete ret;
     return nullptr;
-}
+};
 
+void InterpolationMenu::on_button() {
+    log::debug("hi from this button");
+}
 
 // class interpolationMenu
 

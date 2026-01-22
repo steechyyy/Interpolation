@@ -13,6 +13,7 @@ protected:
 public:
 
 	static InterpolationMenu* create(Spline* s, GameObject* left, GameObject* right);
+	void on_button();
 };
 
 
