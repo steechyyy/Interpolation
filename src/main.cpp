@@ -3,6 +3,7 @@
  */
 
 #include <common.hpp>
+#include <editorstate.hpp>
 /**
  * Brings cocos2d and all Geode namespaces to the current scope.
  */
@@ -26,14 +27,10 @@ using namespace geode::prelude;
  */
 
 
-
-
 class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 	
 	struct Fields {
 		EditorUI* editorUi = nullptr;
-		std::ostringstream objDesc;
-		std::string objString;
 		matjson::Value parameters;
 	};
 	
@@ -51,18 +48,9 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 			)->show();
 		}
 
-		std::filesystem::path parametersJsonPath = Mod::get()->getResourcesDir() / "parameters.json";
-		std::ifstream file(parametersJsonPath);
-		if (!file.is_open()) {
-			log::error("failed to open json");
-			return true;
-		}
-		auto result = matjson::parse(file);
-		if (!result) {
-			log::error("failed to parse json, {}", result.unwrapErr());
-			return true;
-		}
-		m_fields->parameters = result.unwrap();
+
+
+
 
 		auto btnSprite = ButtonSprite::create(
 			"Interpolate", 30, 0, .4f, true, "bigFont.fnt", "GJ_button_04.png", 30.f
@@ -76,7 +64,6 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 		auto menu = this->getChildByID("top-menu");
 		menu->addChild(theButton);
-
 		menu->updateLayout();
 
 		return true;
@@ -124,7 +111,6 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		};
 
 
-
 	};
 	
 };
@@ -143,6 +129,26 @@ class $modify(TheEditorUI, EditorUI) {
 
 		auto& mgr = SplineManager::get();
 		mgr.newSpline("hi twin");
+
+		auto& edst = getEditorState();
+		edst.editorUI = this;
+		edst.levelEditorLayer = editorLayer;
+
+		std::filesystem::path parametersJsonPath = Mod::get()->getResourcesDir() / "parameters.json";
+		std::ifstream file(parametersJsonPath);
+		if (!file.is_open()) {
+			log::error("failed to open json");
+			return true;
+		}
+		auto result = matjson::parse(file);
+		if (!result) {
+			log::error("failed to parse json, {}", result.unwrapErr());
+			return true;
+		}
+		edst.parameters = result.unwrap();
+
+
+		edst.initialized = true;
 
 		return true;
 	};

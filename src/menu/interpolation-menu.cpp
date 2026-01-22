@@ -4,6 +4,8 @@
 
 #include "SplineManager.hpp"
 #include "interpolation-menu.hpp"
+#include "editorstate.hpp"
+
 
 using namespace geode::prelude;
 
@@ -18,6 +20,8 @@ constexpr ccColor3B clrs[]{
 
 bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     
+    this->right = right;
+    this->left = left;
     auto& mgr = SplineManager::get();
     m_noElasticity = false;
     
@@ -84,7 +88,12 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     );
     m_btnMenu->addChildAtPosition(okBtn, Anchor::BottomRight);
 
-    
+    auto nvmBtn = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create("nvm..", "bigFont.fnt", "GJ_Button_06.png"),
+        this,
+        menu_selector(InterpolationMenu::onNvm)
+    );
+    m_btnMenu->addChildAtPosition(nvmBtn, Anchor::BottomRight);
 
     m_mainLayer->addChildAtPosition(m_btnMenu, Anchor::BottomRight, ccp(-10, 10));
     m_btnMenu->updateLayout();
@@ -102,15 +111,33 @@ InterpolationMenu* InterpolationMenu::create(Spline* s, GameObject* left, GameOb
     return nullptr;
 };
 
+void InterpolationMenu::onNvm(CCObject* sender) {
+    log::debug("close");
+}
+
 void InterpolationMenu::on_button(CCObject* sender) {
-    log::debug("hi from this button");
-     log::debug("hi: {}", m_fields->parameters[std::to_string(obj01->m_objectID)]["name"].asString().unwrap());
-    m_fields->objDesc << "1," << obj01->m_objectID << ",2," << obj01->m_positionX << ",3," << obj01->m_positionY << ";";
+    auto& ed = getEditorState();
 
-    m_fields->objString = m_fields->objDesc.str();
-    m_fields->objString.pop_back(); //pop back
 
-    editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
+    log::debug("hi 22");
+    if (!ed.initialized) {
+        FLAlertLayer::create(
+            "uh oh",
+            "<c>\InterpolationMenu: something really bad happened. report this!</c>",
+            "ok.."
+        )->show();
+        return;
+    };
+    
+    std::ostringstream objDesc;
+    std::string objString;
+
+    objDesc << "1," << this->left->m_objectID << ",2," << this->left->m_positionX << ",3," << this->left->m_positionY << ";";
+
+    objString = objDesc.str();
+    objString.pop_back(); //pop back
+
+    ed.levelEditorLayer->createObjectsFromString(objString.c_str(), true, true);
     FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
 
 }
