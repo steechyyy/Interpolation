@@ -125,14 +125,6 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 
 
 
-		// log::debug("hi: {}", m_fields->parameters[std::to_string(obj01->m_objectID)]["name"].asString().unwrap());
-		m_fields->objDesc << "1," << obj01->m_objectID << ",2," << obj01->m_positionX << ",3," << obj01->m_positionY << ";";
-
-		m_fields->objString = m_fields->objDesc.str();
-		m_fields->objString.pop_back(); //pop back
-
-		editorLayer->createObjectsFromString(m_fields->objString.c_str(), true, true);
-		//FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
 	};
 	
 };
