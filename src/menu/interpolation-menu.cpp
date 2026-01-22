@@ -72,18 +72,19 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
 
 
 
-    auto okSprite = ButtonSprite::create("go!", "bigFont.fnt", "GJ_Button_01.png");
-    // m_btnMenu->addChildAtPosition(okBtn, Anchor::BottomRight);
+    
 
     // auto nvmSprite = ButtonSprite::create("nvm..", "bigFont.fnt", "GJ_Button_06.png");
     
     
-    auto okbtn = CCMenuItemSpriteExtra::create(
-        okSprite,
+    auto okBtn = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create("go!", "bigFont.fnt", "GJ_Button_01.png"),
         this,
         menu_selector(InterpolationMenu::on_button)
     );
-    m_btnMenu->addChildAtPosition(okbtn, Anchor::BottomRight);
+    m_btnMenu->addChildAtPosition(okBtn, Anchor::BottomRight);
+
+    
 
     m_mainLayer->addChildAtPosition(m_btnMenu, Anchor::BottomRight, ccp(-10, 10));
     m_btnMenu->updateLayout();
