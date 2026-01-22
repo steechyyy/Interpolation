@@ -101,7 +101,7 @@ InterpolationMenu* InterpolationMenu::create(Spline* s, GameObject* left, GameOb
     return nullptr;
 };
 
-void InterpolationMenu::on_button() {
+void InterpolationMenu::on_button(CCObject* sender) {
     log::debug("hi from this button");
 }
 
