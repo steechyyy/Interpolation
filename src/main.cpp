@@ -49,9 +49,6 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		}
 
 
-
-
-
 		auto btnSprite = ButtonSprite::create(
 			"Interpolate", 30, 0, .4f, true, "bigFont.fnt", "GJ_button_04.png", 30.f
 		);
@@ -94,14 +91,19 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 			return;
 		};
 
-		GameObject* left = o1left ? obj01 : obj02;
-		GameObject* right = o1left ? obj02 : obj01;
+		if (!getEditorState().parameters.contains(std::to_string(obj01->m_objectID))) {
+			FLAlertLayer::create("Interpolate", "This object is not interpolatable", "bruh")->show();
+		}
+
 
 		Point newPoint(0.5f, 0.7f);
-		if (Spline* wow = SplineManager::get().newSpline("wfwfwfwfwae")) {
+		if (Spline* wow = SplineManager::get().getSplineById("test")) {
 			wow->addPoint(std::move(newPoint));
-			InterpolationMenu::create(wow, left, right)->show();
-		};
+			InterpolationMenu::create(objs)->show();
+		}
+		else {
+			log::debug("Couldn't get spline..?");
+		}
 
 		std::vector<std::string> res;
 		for (const auto& ptr : SplineManager::get().getSplines()) {
@@ -128,7 +130,7 @@ class $modify(TheEditorUI, EditorUI) {
 		}
 
 		auto& mgr = SplineManager::get();
-		mgr.newSpline("hi twin");
+		mgr.newSpline("test");
 
 		auto& edst = getEditorState();
 		edst.editorUI = this;
@@ -152,6 +154,11 @@ class $modify(TheEditorUI, EditorUI) {
 
 		return true;
 	};
+
+	~TheEditorUI() {
+		getEditorState().reset();
+		SplineManager::get().clear();
+	}
 	
 
 };

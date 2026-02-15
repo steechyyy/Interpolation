@@ -18,16 +18,195 @@ constexpr ccColor3B clrs[]{
     {235, 56, 202}
 };
 
-bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
+const float ratio = 21 / 5;
+
+static std::string getPropertyValue(const std::string& objectString, const std::string& targetProperty) {
+    std::string clean = objectString;
+
+    if (!clean.empty() && clean.back() == ';') {
+        clean.pop_back();
+    }
+
+    std::vector<std::string> parts;
+    std::stringstream ss(clean);
+    std::string item;
+
+    while (std::getline(ss, item, ',')) {
+        parts.push_back(item);
+    }
     
-    this->right = right;
-    this->left = left;
+    for (size_t i = 0; i + 1 < parts.size(); i += 2) {
+        if (parts[i] == targetProperty) {
+            return parts[i + 1];
+        }
+    }
+
+    return "";
+}
+
+static std::string replaceProperty(
+    const std::string& objectString,
+    const std::string& targetProperty,
+    const std::string& newValue
+) {
+    std::string clean = objectString;
+    bool hadSemicolon = false;
+
+    if (!clean.empty() && clean.back() == ';') {
+        clean.pop_back();
+        hadSemicolon = true;
+    }
+
+
+    std::vector<std::string> parts;
+    std::stringstream ss(clean);
+    std::string item;
+
+    while (std::getline(ss, item, ',')) {
+        parts.push_back(item);
+    }
+
+    bool found = false;
+    for (size_t i = 0; i + 1 < parts.size(); i += 2) {
+        if (parts[i] == targetProperty) {
+            parts[i + 1] = newValue;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        parts.push_back(targetProperty);
+        parts.push_back(newValue);
+    }
+
+    std::string res;
+    for (size_t i = 0; i < parts.size(); ++i) {
+        res += parts[i];
+        if (i != parts.size() - 1) {
+            res += ",";
+        }
+    }
+
+    if (hadSemicolon) {
+        res += ";";
+    }
+
+    return res;
+}
+
+// return the 1. leftmost and 2. rightmost object
+static std::pair<GameObject*, GameObject*> getObjBounds(CCArray* objects) {
+    GameObject* leftmost = nullptr;
+    GameObject* rightmost = nullptr;
+
+    CCObject* v;
+    CCARRAY_FOREACH(objects, v) {
+        auto obj = static_cast<GameObject*>(v);
+        if (!obj) continue;
+
+        double x = obj->m_positionX;
+
+        if (!leftmost || x < leftmost->m_positionX)
+            leftmost = obj;
+
+        if (!rightmost || x > rightmost->m_positionX)
+            rightmost = obj;
+    }
+
+    return std::make_pair(leftmost, rightmost);
+}
+
+// return the difference of xPositions of all obecjts inside a CCArray
+static double getDiff(CCArray* objects) {
+    std::pair<GameObject*, GameObject*> lr = getObjBounds(objects);
+
+    return lr.second->m_positionX - lr.first->m_positionX;
+}
+
+
+bool InterpolationMenu::setup(CCArray* objects) {
+    
+
     auto& mgr = SplineManager::get();
+    auto& editorState = getEditorState();
+
     m_noElasticity = false;
+
+    //
+    // 1, create a new spline for every parameter our trigger has
+    //
+
+    GameObject* firstObject = static_cast<GameObject*>(objects->firstObject());
+    std::string_view objectId = std::to_string(firstObject->m_objectID);
+
+    if (!editorState.parameters.contains(objectId)) {
+        log::error("could not find objectID {} in json!", objectId);
+        return false;
+    }
+    auto& trig = editorState.parameters[objectId];
     
-    float diff = right->getPositionX() - left->getPositionX();
-    mgr.addPointToSpline(s->getId(), Point(0, .5));
-    mgr.addPointToSpline(s->getId(), Point(1, .5));
+    if (!trig.contains("parameters")) {
+        log::error("json does not include parameters for objectId {}", objectId);
+        return false;
+    }
+    auto& params = trig["parameters"];
+
+    for (auto const& [k, val] : params) { // For every parameter:
+        std::string paramId = k;
+        std::string name = val["name"].asString().unwrapOr("undefined");
+
+        
+        Spline* newSpline = mgr.newSpline(name); // Create a new spline with that parameters name
+        loadedSplines.emplace_back(newSpline); // Add it to memory
+
+        
+        std::pair<GameObject*, GameObject*> lr = getObjBounds(objects);
+        double diff = lr.second->m_positionX - lr.first->m_positionX;
+        
+        CCObject* v;
+        CCARRAY_FOREACH(objects, v) { // For every object
+            GameObject* obj = static_cast<GameObject*>(v);
+            gd::string saveString = obj->getSaveString(editorState.levelEditorLayer);
+
+
+            double t = 0.0;
+            if (diff != 0.0) {
+                t = (obj->m_positionX - lr.first->m_positionX) / diff;
+            } else {
+                log::warn("Difference between positions is 0!");
+            }
+
+            Point newPoint = Point();
+            newPoint.setObj(obj);
+            newPoint.setTime(t);
+            
+
+        }
+
+    }
+
+
+
+
+
+    /*
+    the spline window should:
+        - if multiple objects selected, automatically create points for each of them (& their values)
+        - right click to create new points
+        - hold left to move points (shift to move multiple?)
+
+    requirements:
+        - InterpolationMenu constructs splines from an array of GameObject*s
+        - interpolationmenu should honestly own the splines why tf do i have a wrapper for splines bro
+        - 
+
+    When points have a gameobject, the associated gameobject will be modified. If not, create a
+    new gameobject at the point's position!!!
+
+
+    */
+
 
     /* todo:
         -   design the system in such a way multiple splines can be shown ontop of eachother
@@ -37,29 +216,17 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
         -   If button for parameter is selected, user can edit selected parameters
         -   die or something i dont know
     */
-    
-    log::debug("{}", diff);
 
 
     this->setTitle("INTERPOLATIOOOONN!!!");
     this->setID("interpolation-menu"_spr);
 
-    auto label = CCLabelBMFont::create(s->getId().c_str(), "bigFont.fnt");
+    auto label = CCLabelBMFont::create("INTERPOLATIOOOONN!!!", "bigFont.fnt");
     label->setSkewY(7.f);
     m_mainLayer->addChildAtPosition(label, Anchor::Center);
 
     
-    cocos2d::ccColor4F pointColor(0.f, 1.f, 1.f, 1.f);
-    cocos2d::ccColor3B drawColor(0, 0, 0);
-    cocos2d::CCSize st(15.f, 15.f);
 
-    auto* draw = CCDrawNode::create();
-    draw->setZOrder(-1);
-    m_mainLayer->addChild(draw);
-    draw->setAnchorPoint(ccp(.5f, .5f));
-    draw->setContentSize(ccp(50.f, 50.f));
-
-    draw->drawDot(ccp(2.f, 2.f), 1, ccc4f(0.f, 1.f, 1.f, .5f));
 
 
     // buton.......omgg......
@@ -75,6 +242,17 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     m_btnMenu->setID("btns_bottom"_spr);
 
 
+    auto mainMenuSize = CCSize(200.f, 200.f / ratio);
+    m_mainMenu = CCMenu::create();
+    m_mainMenu->ignoreAnchorPointForPosition(false);
+    m_mainMenu->setContentSize(mainMenuSize);
+    m_mainMenu->setPosition(ccp(0, 0));
+    m_mainMenu->setAnchorPoint(ccp(0, 1));
+    m_mainMenu->setID("main"_spr);
+
+    
+
+    
 
     
 
@@ -95,14 +273,41 @@ bool InterpolationMenu::setup(Spline* s, GameObject* left, GameObject* right) {
     );
     m_btnMenu->addChildAtPosition(nvmBtn, Anchor::BottomRight);
 
+
+    cocos2d::ccColor4F pointColor(0.f, 1.f, 1.f, 1.f);
+    cocos2d::ccColor3B drawColor(0, 0, 0);
+    cocos2d::CCSize st(15.f, 15.f);
+
+    auto* draw = CCDrawNode::create();
+    draw->setZOrder(-1);
+
+    draw->setAnchorPoint(ccp(0.f, 1.f));
+    draw->setContentSize(m_mainMenu->getContentSize());
+
+
+    draw->drawRect(
+        ccp(0, 0),
+        ccp(mainMenuSize.width, mainMenuSize.height),
+        ccc4f(0.f, 0.f, 0.f, 1.f),
+        0.f,
+        ccc4f(0.f, 0.f, 0.f, 0.f)
+    );
+
+    draw->drawDot(ccp(2.f, 2.f), 1, ccc4f(0.f, 1.f, 1.f, .5f));
+
+    m_mainMenu->addChildAtPosition(draw, Anchor::TopLeft);
+
+
+
     m_mainLayer->addChildAtPosition(m_btnMenu, Anchor::BottomRight, ccp(-10, 10));
+    m_mainLayer->addChildAtPosition(m_mainMenu, Anchor::TopLeft, ccp(30, -45));
     m_btnMenu->updateLayout();
     return true;
 };
 
-InterpolationMenu* InterpolationMenu::create(Spline* s, GameObject* left, GameObject* right) {
+InterpolationMenu* InterpolationMenu::create(CCArray* objects) {
     auto ret = new InterpolationMenu();
-    if (ret->initAnchored(400.f, 270.f, s, left, right)) {
+    if (ret->initAnchored(400.f, 270.f, objects)) {
         ret->autorelease();
         return ret;
     }
@@ -123,7 +328,7 @@ void InterpolationMenu::on_button(CCObject* sender) {
     if (!ed.initialized) {
         FLAlertLayer::create(
             "uh oh",
-            "<c>\InterpolationMenu: something really bad happened. report this!</c>",
+            "<c>InterpolationMenu: something really bad happened. report this!</c>",
             "ok.."
         )->show();
         return;
@@ -132,7 +337,7 @@ void InterpolationMenu::on_button(CCObject* sender) {
     std::ostringstream objDesc;
     std::string objString;
 
-    objDesc << "1," << this->left->m_objectID << ",2," << this->left->m_positionX << ",3," << this->left->m_positionY << ";";
+    objDesc << "1,1,2,100,3,300;";
 
     objString = objDesc.str();
     objString.pop_back(); //pop back

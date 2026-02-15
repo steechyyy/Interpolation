@@ -10,6 +10,7 @@ public:
 	float time;
 	float value;
 	Spline* spline;
+	GameObject* obj;
 
 	// construct new point v3
 	Point();
@@ -25,6 +26,12 @@ public:
 
 	//im lazuy
 	void setValue(float v);
+
+	//Sets the object which this point is linked to
+	void setObj(GameObject* obj);
+
+	// Returns
+	GameObject* getObj();
 
 	// get time
 	float getTime() const;

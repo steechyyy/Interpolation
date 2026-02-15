@@ -4,17 +4,19 @@
 #include <common.hpp>
 using namespace geode::prelude;
 
-class InterpolationMenu : public geode::Popup<Spline*, GameObject*, GameObject*> {
+class InterpolationMenu : public geode::Popup<CCArray*> {
 protected:
 	CCMenu* m_btnMenu = nullptr;
-	GameObject* left = nullptr;
-	GameObject* right = nullptr;
+	CCMenu* m_mainMenu = nullptr;
 
-	bool setup(Spline*, GameObject* left, GameObject* right) override;
+
+	std::vector<std::unique_ptr<Spline>> loadedSplines;
+
+	bool setup(CCArray* objects) override;
 
 public:
 
-	static InterpolationMenu* create(Spline* s, GameObject* left, GameObject* right);
+	static InterpolationMenu* create(CCArray* objects);
 	void on_button(CCObject* sender);
 	void onNvm(CCObject* sender);
 };
