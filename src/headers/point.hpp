@@ -6,11 +6,15 @@
 class Spline;
 
 class Point {
-public:
+private:
 	float time;
 	float value;
+	std::string type;
 	Spline* spline;
 	GameObject* obj;
+
+public:
+
 
 	// construct new point v3
 	Point();
@@ -29,9 +33,15 @@ public:
 
 	//Sets the object which this point is linked to
 	void setObj(GameObject* obj);
+	
+	//sets the data type of the value attribute
+	void setType(const std::string& type);
+
+	//set parent spline
+	void setSpline(Spline* s);
 
 	// Returns
-	GameObject* getObj();
+	GameObject* getObj() const;
 
 	// get time
 	float getTime() const;

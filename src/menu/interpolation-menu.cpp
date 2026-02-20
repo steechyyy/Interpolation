@@ -20,6 +20,16 @@ constexpr ccColor3B clrs[]{
 
 const float ratio = 21 / 5;
 
+template<typename T>
+void applyValue(const std::string_view value, std::unique_ptr<Point>& newPoint) {
+    Result<T> pointVal = numFromString<T>(value);
+    if (pointVal) {
+        newPoint->setValue(pointVal.unwrap());
+    } else {
+        log::warn("{}", pointVal.unwrapErr());
+    }
+}
+
 static std::string getPropertyValue(const std::string& objectString, const std::string& targetProperty) {
     std::string clean = objectString;
 
@@ -126,8 +136,6 @@ static double getDiff(CCArray* objects) {
 
 
 bool InterpolationMenu::setup(CCArray* objects) {
-    
-
     auto& mgr = SplineManager::get();
     auto& editorState = getEditorState();
 
@@ -138,7 +146,7 @@ bool InterpolationMenu::setup(CCArray* objects) {
     //
 
     GameObject* firstObject = static_cast<GameObject*>(objects->firstObject());
-    std::string_view objectId = std::to_string(firstObject->m_objectID);
+    std::string objectId = std::to_string(firstObject->m_objectID);
 
     if (!editorState.parameters.contains(objectId)) {
         log::error("could not find objectID {} in json!", objectId);
@@ -148,42 +156,56 @@ bool InterpolationMenu::setup(CCArray* objects) {
     
     if (!trig.contains("parameters")) {
         log::error("json does not include parameters for objectId {}", objectId);
-        return false;
+        return false; 
     }
     auto& params = trig["parameters"];
 
     for (auto const& [k, val] : params) { // For every parameter:
         std::string paramId = k;
         std::string name = val["name"].asString().unwrapOr("undefined");
+        std::string type = val["type"].asString().unwrapOr("undefined");
 
         
-        Spline* newSpline = mgr.newSpline(name); // Create a new spline with that parameters name
-        loadedSplines.emplace_back(newSpline); // Add it to memory
-
+        auto newSpline = std::make_unique<Spline>(k);
+        loadedSplines.push_back(std::move(newSpline));
+        
         
         std::pair<GameObject*, GameObject*> lr = getObjBounds(objects);
         double diff = lr.second->m_positionX - lr.first->m_positionX;
-        
-        CCObject* v;
-        CCARRAY_FOREACH(objects, v) { // For every object
-            GameObject* obj = static_cast<GameObject*>(v);
-            gd::string saveString = obj->getSaveString(editorState.levelEditorLayer);
 
+        for (GameObject* thing : CCArrayExt<GameObject*>(objects)) { // For every object
+            gd::string saveString = thing->getSaveString(editorState.levelEditorLayer);
 
             double t = 0.0;
             if (diff != 0.0) {
-                t = (obj->m_positionX - lr.first->m_positionX) / diff;
-            } else {
-                log::warn("Difference between positions is 0!");
+                t = (thing->m_positionX - lr.first->m_positionX) / diff;
+            }
+            else {
+                log::warn("Difference between positions is zero");
+            }
+            log::debug("Getting property {} of {}: \"{}\"", k, objectId, getPropertyValue(saveString, k));
+
+            auto newPoint = std::make_unique<Point>();
+            newPoint->setObj(thing);
+            newPoint->setTime(t);
+            newPoint->setType(type);
+
+            auto propVal = getPropertyValue(saveString, k);
+            if (propVal != "") {
+                if (type == "float") {
+                    applyValue<float>(propVal, newPoint);
+                }
+                else if (type == "int") {
+                    applyValue<int>(propVal, newPoint);
+                }
+            }
+            else {
+                log::info("property {} of {} is undefined!", k, objectId);
             }
 
-            Point newPoint = Point();
-            newPoint.setObj(obj);
-            newPoint.setTime(t);
-            
-
+            loadedSplines.back()->addPoint(std::move(newPoint));
         }
-
+        // i learnt that ccarray_foreach is very stinky and toxic
     }
 
 
@@ -225,9 +247,6 @@ bool InterpolationMenu::setup(CCArray* objects) {
     label->setSkewY(7.f);
     m_mainLayer->addChildAtPosition(label, Anchor::Center);
 
-    
-
-
 
     // buton.......omgg......
     m_btnMenu = CCMenu::create();
@@ -249,11 +268,6 @@ bool InterpolationMenu::setup(CCArray* objects) {
     m_mainMenu->setPosition(ccp(0, 0));
     m_mainMenu->setAnchorPoint(ccp(0, 1));
     m_mainMenu->setID("main"_spr);
-
-    
-
-    
-
     
 
     // auto nvmSprite = ButtonSprite::create("nvm..", "bigFont.fnt", "GJ_Button_06.png");
@@ -280,20 +294,37 @@ bool InterpolationMenu::setup(CCArray* objects) {
 
     auto* draw = CCDrawNode::create();
     draw->setZOrder(-1);
-
     draw->setAnchorPoint(ccp(0.f, 1.f));
     draw->setContentSize(m_mainMenu->getContentSize());
 
+    //
+    // background!
+    //
 
     draw->drawRect(
         ccp(0, 0),
         ccp(mainMenuSize.width, mainMenuSize.height),
-        ccc4f(0.f, 0.f, 0.f, 1.f),
+        ccc4f(.1f, .1f, .1f, 1.f),
         0.f,
         ccc4f(0.f, 0.f, 0.f, 0.f)
     );
 
-    draw->drawDot(ccp(2.f, 2.f), 1, ccc4f(0.f, 1.f, 1.f, .5f));
+    draw->drawRect(
+        ccp(0, 0),
+        ccp(mainMenuSize.width, mainMenuSize.height / 2),
+        ccc4f(.08f, .08f, .08f, 1.f),
+        0.f,
+        ccc4f(0.f, 0.f, 0.f, 0.f)
+    );
+
+    log::debug("{}", loadedSplines[0]->getId());
+    for (const std::unique_ptr<Point>& p : loadedSplines[0]->getPoints()) {
+        draw->drawDot(
+            ccp(p->getTime() * mainMenuSize.width, mainMenuSize.height / 2),
+            1.f,
+            ccc4f(1.f, 1.f, 1.f, 1.f)
+        );
+    }
 
     m_mainMenu->addChildAtPosition(draw, Anchor::TopLeft);
 

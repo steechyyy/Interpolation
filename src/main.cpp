@@ -76,10 +76,12 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 	
 		CCArray* objs = editorUi->getSelectedObjects();
 
+		/*
 		if (objs->count() != 2) {
 			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTs", "bruh")->show();
 			return;
 		};
+		*/
 
 		auto obj01 = static_cast<GameObject*>(objs->objectAtIndex(0));
 		auto obj02 = static_cast<GameObject*>(objs->objectAtIndex(1));
@@ -96,23 +98,7 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 		}
 
 
-		Point newPoint(0.5f, 0.7f);
-		if (Spline* wow = SplineManager::get().getSplineById("test")) {
-			wow->addPoint(std::move(newPoint));
-			InterpolationMenu::create(objs)->show();
-		}
-		else {
-			log::debug("Couldn't get spline..?");
-		}
-
-		std::vector<std::string> res;
-		for (const auto& ptr : SplineManager::get().getSplines()) {
-			res.push_back(ptr->getId());
-
-			log::debug("{}", res);
-		};
-
-
+		InterpolationMenu::create(objs)->show();
 	};
 	
 };
@@ -128,9 +114,6 @@ class $modify(TheEditorUI, EditorUI) {
 		if (!EditorUI::init(editorLayer)) {
 			return false;
 		}
-
-		auto& mgr = SplineManager::get();
-		mgr.newSpline("test");
 
 		auto& edst = getEditorState();
 		edst.editorUI = this;

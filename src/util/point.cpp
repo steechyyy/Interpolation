@@ -18,7 +18,15 @@ void Point::setObj(GameObject* obj) {
 	obj = obj;
 }
 
-GameObject* Point::getObj() {
+void Point::setType(const std::string& typ) {
+	type = typ;
+}
+
+void Point::setSpline(Spline* s) {
+	spline = s;
+}
+
+GameObject* Point::getObj() const {
 	return obj;
 }
 

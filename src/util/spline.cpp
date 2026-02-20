@@ -39,15 +39,15 @@ void Spline::clear() {
 };
 
 //bruh 2
-Point* Spline::addPoint(Point&& p) {
-	p.spline = this;
-	points.push_back(std::make_unique<Point>(std::move(p)));
+Point* Spline::addPoint(std::unique_ptr<Point> p) {
+	p->setSpline(this);
+	points.push_back(std::move(p));
 	return points.back().get();
 };
 
 // construct points from.. uh.. not a point
 Point* Spline::addPoint(float t, float v) {
-	points.push_back( std::make_unique<Point>(t, v, this) );
+	points.push_back(std::make_unique<Point>(t, v, this) );
 	return points.back().get();
 };
 

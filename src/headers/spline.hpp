@@ -29,7 +29,7 @@ public:
 	Point* getPointAtIndex(size_t index); 	// hacks the us navy
 
 	//setters
-	Point* addPoint(Point&& p); // bruh 2
+	Point* addPoint(std::unique_ptr<Point> p); // woah
 	Point* addPoint(float t, float v); // construct points from.. uh.. not a point
 
 	bool removePointAtIndex(size_t index);

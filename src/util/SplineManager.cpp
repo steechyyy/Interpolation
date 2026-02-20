@@ -1,3 +1,5 @@
+/*
+
 #include <common.hpp>
 #include <SplineManager.hpp>
 
@@ -11,13 +13,13 @@ Spline* SplineManager::newSpline(const std::string& id) {
 	return splines.back().get();
 };
 
-/*
+
 Spline* SplineManager::newSpline(const std::string& id, const std::vector<Point>& points) {
 	auto s = std::make_unique<Spline>(id, points);
 	splines.push_back(std::move(s));
 	return splines.back().get();
 };
-*/
+
 
 Spline* SplineManager::newSpline(const std::string& id, const CCArray* objs) {
 	if (getSplineById(id) != nullptr) return nullptr;
@@ -96,3 +98,5 @@ const std::vector<std::unique_ptr<Spline>>& SplineManager::getSplines() const {
 void SplineManager::clear() {
 	splines.clear();
 }
+
+*/
