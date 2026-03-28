@@ -1,25 +1,34 @@
-#ifndef INTERPOLATIONMENU_H
-#define INTERPOLATIONMENU_H
+#pragma once
 
-#include <common.hpp>
+
 using namespace geode::prelude;
 
-class InterpolationMenu : public geode::Popup<CCArray*> {
+class InteractableGraphPoint;
+
+class InterpolationMenu : public Popup {
 protected:
+
 	CCMenu* m_btnMenu = nullptr;
-	CCMenu* m_mainMenu = nullptr;
+	CCMenu* m_splineMenu = nullptr;
 
-
+	std::vector<InteractableGraphPoint*> graphDots;
 	std::vector<std::unique_ptr<Spline>> loadedSplines;
 
-	bool setup(CCArray* objects) override;
+	bool init(CCArray* objects);
 
 public:
 
-	static InterpolationMenu* create(CCArray* objects);
+	static InterpolationMenu* create(CCArray* objects) {
+		auto popup = new InterpolationMenu;
+		if (popup->init(objects)) {
+			popup->autorelease();
+			return popup;
+		}
+		delete popup;
+		return nullptr;
+	};
+
+
 	void on_button(CCObject* sender);
 	void onNvm(CCObject* sender);
 };
-
-
-#endif

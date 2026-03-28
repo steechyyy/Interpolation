@@ -1,10 +1,11 @@
 #include <Geode/Geode.hpp>
-#include "point.hpp"
 #include "spline.hpp"
+#include "InteractableGraphPoint.hpp"
+
 using namespace geode::prelude;
 
 // costructor 2
-Spline::Spline(const std::string& idNew)
+Spline::Spline(std::string_view idNew)
 	: id(idNew) {
 }
 
@@ -16,21 +17,17 @@ might delete this
 */
 
 //the best constructor
-Spline::Spline(const std::string& idNew, const CCArray* objs)
+Spline::Spline(std::string_view idNew, CCArray* objs)
 	: id(idNew) {
 
-	std::vector<std::unique_ptr<Point>> pointArr;
-	CCObject* obj;
+	std::vector<InteractableGraphPoint*> pointArr;
 
 	//todo: sort all objects by x pos, evaluate 1st and last, normalize values
-	CCARRAY_FOREACH(objs, obj) {
-		GameObject* gameObject = static_cast<GameObject*>(obj);
-		pointArr.push_back(
-			std::make_unique<Point>(gameObject->getPositionX(), gameObject->getPositionY(), this)
-		);
+	for (auto v : CCArrayExt<GameObject*>(objs)) {
+		pointArr.push_back(InteractableGraphPoint::create("smallDot.png", this));
 	}
 
-	points = std::move(pointArr);
+	points = pointArr;
 };
 
 //clear the thing
@@ -39,16 +36,20 @@ void Spline::clear() {
 };
 
 //bruh 2
-Point* Spline::addPoint(std::unique_ptr<Point> p) {
+InteractableGraphPoint* Spline::addPoint(InteractableGraphPoint* p) {
 	p->setSpline(this);
-	points.push_back(std::move(p));
-	return points.back().get();
+	points.push_back(p);
+	return points.back();
 };
 
 // construct points from.. uh.. not a point
-Point* Spline::addPoint(float t, float v) {
-	points.push_back(std::make_unique<Point>(t, v, this) );
-	return points.back().get();
+InteractableGraphPoint* Spline::addPoint(float t, float v) {
+	auto p = InteractableGraphPoint::create("smallDot.png", this);
+	p->setValue(v);
+	p->setTime(t);
+	points.push_back(p);
+
+	return points.back();
 };
 
 bool Spline::removePointAtIndex(size_t index) {
@@ -58,9 +59,9 @@ bool Spline::removePointAtIndex(size_t index) {
 	return true;
 }
 
-bool Spline::removePoint(Point* p) {
+bool Spline::removePoint(InteractableGraphPoint* p) {
 	auto it = std::find_if(points.begin(), points.end(),
-		[p](const std::unique_ptr<Point>& up) { return up.get() == p; });
+		[p](const std::unique_ptr<InteractableGraphPoint>& up) { return up.get() == p; });
 	if (it == points.end()) return false;
 
 	points.erase(it);
@@ -69,20 +70,21 @@ bool Spline::removePoint(Point* p) {
 }
 
 // hacks the us navy
-Point* Spline::getPointAtIndex(size_t index) {
+InteractableGraphPoint* Spline::getPointAtIndex(size_t index) {
 	if (index < points.size()) {
-		return points[index].get();
+		return points[index];
 	}
+
 	
 	return nullptr;
 };
 
 // gets iD
-const std::string& Spline::getId() const {
+std::string_view Spline::getId() const {
 	return id;
 };
 
 // bruh
-const std::vector<std::unique_ptr<Point>>& Spline::getPoints() const {
+const std::vector<InteractableGraphPoint*> Spline::getPoints() const {
 	return points;
 };

@@ -1,15 +1,15 @@
 #include <Geode/Geode.hpp>
-#include <Geode/utils/general.hpp>
 
 
 #include "SplineManager.hpp"
 #include "interpolation-menu.hpp"
 #include "editorstate.hpp"
-
+#include "InteractableGraphPoint.hpp"
 
 using namespace geode::prelude;
 
-constexpr ccColor3B clrs[]{
+
+constexpr ccColor3B clrs[6]{
     {116, 52, 235},
     {56, 163, 235},
     {235, 143, 56},
@@ -21,7 +21,7 @@ constexpr ccColor3B clrs[]{
 const float ratio = 21 / 5;
 
 template<typename T>
-void applyValue(const std::string_view value, std::unique_ptr<Point>& newPoint) {
+void applyValue(std::string_view value, InteractableGraphPoint* newPoint) {
     Result<T> pointVal = numFromString<T>(value);
     if (pointVal) {
         newPoint->setValue(pointVal.unwrap());
@@ -30,7 +30,11 @@ void applyValue(const std::string_view value, std::unique_ptr<Point>& newPoint) 
     }
 }
 
-static std::string getPropertyValue(const std::string& objectString, const std::string& targetProperty) {
+static ccColor3B getColor(const size_t num) {
+    return (num < std::size(clrs)) ? clrs[num] : ccColor3B(0, 0, 0);
+}
+
+static std::string getPropertyValue(std::string objectString, std::string_view targetProperty) {
     std::string clean = objectString;
 
     if (!clean.empty() && clean.back() == ';') {
@@ -55,9 +59,9 @@ static std::string getPropertyValue(const std::string& objectString, const std::
 }
 
 static std::string replaceProperty(
-    const std::string& objectString,
-    const std::string& targetProperty,
-    const std::string& newValue
+    std::string objectString,
+    std::string targetProperty,
+    std::string newValue
 ) {
     std::string clean = objectString;
     bool hadSemicolon = false;
@@ -105,23 +109,22 @@ static std::string replaceProperty(
     return res;
 }
 
+
+
 // return the 1. leftmost and 2. rightmost object
 static std::pair<GameObject*, GameObject*> getObjBounds(CCArray* objects) {
     GameObject* leftmost = nullptr;
     GameObject* rightmost = nullptr;
 
-    CCObject* v;
-    CCARRAY_FOREACH(objects, v) {
-        auto obj = static_cast<GameObject*>(v);
-        if (!obj) continue;
 
-        double x = obj->m_positionX;
+    for (auto v : CCArrayExt<GameObject*>(objects)) {
+        if (!v) continue;
 
-        if (!leftmost || x < leftmost->m_positionX)
-            leftmost = obj;
+        double x = v->m_positionX;
 
-        if (!rightmost || x > rightmost->m_positionX)
-            rightmost = obj;
+        if (!leftmost || x < leftmost->m_positionX) { leftmost = v; }
+        if (!rightmost || x > rightmost->m_positionX) { rightmost = v; }
+
     }
 
     return std::make_pair(leftmost, rightmost);
@@ -130,19 +133,20 @@ static std::pair<GameObject*, GameObject*> getObjBounds(CCArray* objects) {
 // return the difference of xPositions of all obecjts inside a CCArray
 static double getDiff(CCArray* objects) {
     std::pair<GameObject*, GameObject*> lr = getObjBounds(objects);
-
     return lr.second->m_positionX - lr.first->m_positionX;
 }
 
 
-bool InterpolationMenu::setup(CCArray* objects) {
+bool InterpolationMenu::init(CCArray* objects) {
+    if (!Popup::init(400.f, 270.f)) { return false; }
+
     auto& mgr = SplineManager::get();
     auto& editorState = getEditorState();
 
     m_noElasticity = false;
 
     //
-    // 1, create a new spline for every parameter our trigger has
+    // 1) create a new spline for every parameter our trigger has
     //
 
     GameObject* firstObject = static_cast<GameObject*>(objects->firstObject());
@@ -161,7 +165,6 @@ bool InterpolationMenu::setup(CCArray* objects) {
     auto& params = trig["parameters"];
 
     for (auto const& [k, val] : params) { // For every parameter:
-        std::string paramId = k;
         std::string name = val["name"].asString().unwrapOr("undefined");
         std::string type = val["type"].asString().unwrapOr("undefined");
 
@@ -185,8 +188,8 @@ bool InterpolationMenu::setup(CCArray* objects) {
             }
             log::debug("Getting property {} of {}: \"{}\"", k, objectId, getPropertyValue(saveString, k));
 
-            auto newPoint = std::make_unique<Point>();
-            newPoint->setObj(thing);
+            auto newPoint = InteractableGraphPoint::create("smallDot.png", newSpline.get());
+            newPoint->setValue(1.0f);
             newPoint->setTime(t);
             newPoint->setType(type);
 
@@ -203,14 +206,10 @@ bool InterpolationMenu::setup(CCArray* objects) {
                 log::info("property {} of {} is undefined!", k, objectId);
             }
 
-            loadedSplines.back()->addPoint(std::move(newPoint));
+            loadedSplines.back()->addPoint(newPoint);
         }
-        // i learnt that ccarray_foreach is very stinky and toxic
+
     }
-
-
-
-
 
     /*
     the spline window should:
@@ -261,13 +260,13 @@ bool InterpolationMenu::setup(CCArray* objects) {
     m_btnMenu->setID("btns_bottom"_spr);
 
 
-    auto mainMenuSize = CCSize(200.f, 200.f / ratio);
-    m_mainMenu = CCMenu::create();
-    m_mainMenu->ignoreAnchorPointForPosition(false);
-    m_mainMenu->setContentSize(mainMenuSize);
-    m_mainMenu->setPosition(ccp(0, 0));
-    m_mainMenu->setAnchorPoint(ccp(0, 1));
-    m_mainMenu->setID("main"_spr);
+    auto splineMenuSize = CCSize(200.f, 200.f / ratio);
+    m_splineMenu = CCMenu::create();
+    m_splineMenu->ignoreAnchorPointForPosition(false);
+    m_splineMenu->setContentSize(splineMenuSize);
+    m_splineMenu->setPosition(ccp(0, 0));
+    m_splineMenu->setAnchorPoint(ccp(0, 1));
+    m_splineMenu->setID("main"_spr);
     
 
     // auto nvmSprite = ButtonSprite::create("nvm..", "bigFont.fnt", "GJ_Button_06.png");
@@ -295,7 +294,7 @@ bool InterpolationMenu::setup(CCArray* objects) {
     auto* draw = CCDrawNode::create();
     draw->setZOrder(-1);
     draw->setAnchorPoint(ccp(0.f, 1.f));
-    draw->setContentSize(m_mainMenu->getContentSize());
+    draw->setContentSize(m_splineMenu->getContentSize());
 
     //
     // background!
@@ -303,7 +302,7 @@ bool InterpolationMenu::setup(CCArray* objects) {
 
     draw->drawRect(
         ccp(0, 0),
-        ccp(mainMenuSize.width, mainMenuSize.height),
+        ccp(splineMenuSize.width, splineMenuSize.height),
         ccc4f(.1f, .1f, .1f, 1.f),
         0.f,
         ccc4f(0.f, 0.f, 0.f, 0.f)
@@ -311,40 +310,51 @@ bool InterpolationMenu::setup(CCArray* objects) {
 
     draw->drawRect(
         ccp(0, 0),
-        ccp(mainMenuSize.width, mainMenuSize.height / 2),
+        ccp(splineMenuSize.width, splineMenuSize.height / 2),
         ccc4f(.08f, .08f, .08f, 1.f),
         0.f,
         ccc4f(0.f, 0.f, 0.f, 0.f)
     );
 
     log::debug("{}", loadedSplines[0]->getId());
-    for (const std::unique_ptr<Point>& p : loadedSplines[0]->getPoints()) {
-        draw->drawDot(
-            ccp(p->getTime() * mainMenuSize.width, mainMenuSize.height / 2),
-            1.f,
-            ccc4f(1.f, 1.f, 1.f, 1.f)
+
+
+    loadedSplines[0]->forEachPoint([splineMenuSize](Point& p) {
+        CCPoint currentPos = ccp(
+            p.getTime() * splineMenuSize.width,
+            splineMenuSize.height / 2 + (p.getValue() / 3)
         );
+
+    });
+
+    /*
+    * 
+    for (const std::unique_ptr<Point>& p : loadedSplines[0]->getPoints()) {
+        CCPoint currentPos = ccp(
+            p->getTime() * splineMenuSize.width,
+            splineMenuSize.height / 2 + (p->getValue() / 3)
+        );
+
+        InteractableGraphPoint* dot = InteractableGraphPoint::create("smallDot.png", p);
+        dot->setContentSize(CCSizeFromString("{5,5}"));
+        dot->ignoreAnchorPointForPosition(false);
+        dot->setPosition(currentPos);
+        dot->updateAnchoredPosition(geode::Anchor::Center, ccp(0, 0), ccp(0, 0));
+        
+        m_splineMenu->addChild(dot);
     }
 
-    m_mainMenu->addChildAtPosition(draw, Anchor::TopLeft);
+    
+    */
 
-
+    
+    m_splineMenu->addChildAtPosition(draw, Anchor::TopLeft);
 
     m_mainLayer->addChildAtPosition(m_btnMenu, Anchor::BottomRight, ccp(-10, 10));
-    m_mainLayer->addChildAtPosition(m_mainMenu, Anchor::TopLeft, ccp(30, -45));
+    m_mainLayer->addChildAtPosition(m_splineMenu, Anchor::TopLeft, ccp(30, -45));
     m_btnMenu->updateLayout();
+
     return true;
-};
-
-InterpolationMenu* InterpolationMenu::create(CCArray* objects) {
-    auto ret = new InterpolationMenu();
-    if (ret->initAnchored(400.f, 270.f, objects)) {
-        ret->autorelease();
-        return ret;
-    }
-
-    delete ret;
-    return nullptr;
 };
 
 void InterpolationMenu::onNvm(CCObject* sender) {
@@ -353,7 +363,6 @@ void InterpolationMenu::onNvm(CCObject* sender) {
 
 void InterpolationMenu::on_button(CCObject* sender) {
     auto& ed = getEditorState();
-
 
     log::debug("hi 22");
     if (!ed.initialized) {
@@ -371,12 +380,10 @@ void InterpolationMenu::on_button(CCObject* sender) {
     objDesc << "1,1,2,100,3,300;";
 
     objString = objDesc.str();
-    objString.pop_back(); //pop back
+    objString.pop_back(); // pop back
 
     ed.levelEditorLayer->createObjectsFromString(objString.c_str(), true, true);
     FLAlertLayer::create("Success", "successfully interpolated" , "OK")->show();
 
 }
-
-// class interpolationMenu
 

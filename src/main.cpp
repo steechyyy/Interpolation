@@ -76,27 +76,28 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 	
 		CCArray* objs = editorUi->getSelectedObjects();
 
-		/*
-		if (objs->count() != 2) {
-			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTs", "bruh")->show();
-			return;
-		};
-		*/
-
-		auto obj01 = static_cast<GameObject*>(objs->objectAtIndex(0));
-		auto obj02 = static_cast<GameObject*>(objs->objectAtIndex(1));
-		bool o1left = obj01->getPositionX() < obj02->getPositionX();
-
-
-		if (obj01->m_objectID != obj02->m_objectID) {
-			FLAlertLayer::create("Interpolate", "BRUH SELECT TWO OBJECTS OF THE SAME KIND", "bruh")->show();
+		
+		if (objs->count() <= 1) {
+			FLAlertLayer::create("Interpolate", "BRUH SELECT MORE OBJECTs", "bruh")->show();
 			return;
 		};
 
-		if (!getEditorState().parameters.contains(std::to_string(obj01->m_objectID))) {
-			FLAlertLayer::create("Interpolate", "This object is not interpolatable", "bruh")->show();
+		short int obj1id = -1;
+		for (auto v : CCArrayExt<GameObject*>(objs)) {
+			if (obj1id == -1) {
+				obj1id = v->m_objectID;
+				continue;
+			}
+
+			if (v->m_objectID != obj1id) {
+				FLAlertLayer::create("Interpolate", "you need to select objects of the same kind", "bruh")->show();
+				return;
+			}
 		}
 
+		if (!getEditorState().parameters.contains(utils::numToString(obj1id))) {
+			FLAlertLayer::create("Interpolate", "These objects are not interpolatable", "bruh")->show();
+		}
 
 		InterpolationMenu::create(objs)->show();
 	};
@@ -104,7 +105,6 @@ class $modify(TheEditorPauseLayer, EditorPauseLayer) {
 };
 
 class $modify(TheEditorUI, EditorUI) {
-
 	
 	struct Fields {
 		EditorPauseLayer* epl;

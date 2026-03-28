@@ -5,36 +5,42 @@
 
 #include <string>
 #include <vector>
-#include <cstddef>
 
-#include "point.hpp"
+#include "InteractableGraphPoint.hpp"
 
 using namespace geode::prelude;
 
 class Spline {
 private:
 	std::string id;
-	std::vector<std::unique_ptr<Point>> points;
+	std::vector<InteractableGraphPoint*> points;
 
 public:
 
 	// constructor2
-	Spline(const std::string& idNew); // & = nix wird veraendert am eingabewert
+	Spline(std::string_view idNew); // & = nix wird veraendert am eingabewert
 	// Spline(const std::string& idNew, std::vector<std::unique_ptr<Point>>& newPoints); // might not exist anymore
-	Spline(const std::string& idNew, const CCArray* objs); // the best constructor
+	Spline(std::string_view idNew,  CCArray* objs); // the best constructor
 
 	//getters
-	const std::vector<std::unique_ptr<Point>>& getPoints() const; // bruh
-	const std::string& getId() const; // gets iD
-	Point* getPointAtIndex(size_t index); 	// hacks the us navy
+	const std::vector<InteractableGraphPoint*> getPoints() const; // bruh
+	std::string_view getId() const; // gets iD
+	InteractableGraphPoint* getPointAtIndex(size_t index); 	// hacks the us navy
 
 	//setters
-	Point* addPoint(std::unique_ptr<Point> p); // woah
-	Point* addPoint(float t, float v); // construct points from.. uh.. not a point
+	InteractableGraphPoint* addPoint(InteractableGraphPoint* p); // woah
+	InteractableGraphPoint* addPoint(float t, float v); // construct points from.. uh.. not a point
 
 	bool removePointAtIndex(size_t index);
-	bool removePoint(Point* p);
+	bool removePoint(InteractableGraphPoint* p);
 	void clear(); 	// clear the thing
+
+	template<typename Func>
+	void forEachPoint(Func f) const {
+		for (auto& p : points) {
+			f(*p);
+		}
+	}
 
 	
 };
